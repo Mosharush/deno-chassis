@@ -15,8 +15,9 @@ function notFound(context: Context) {
 }
 
 const app = new Application();
+const router = new Router();
 // Logger
-app.use(async (context: any, next: Function) => {
+app.use(async (context: Context, next: Function) => {
   await next();
   const rt = context.response.headers.get("X-Response-Time");
   console.log(
@@ -26,7 +27,7 @@ app.use(async (context: any, next: Function) => {
   );
 });
 // Response Time
-app.use(async (context: any, next: Function) => {
+app.use(async (context: Context, next: Function) => {
   const start = Date.now();
   await next();
   const ms = Date.now() - start;
@@ -38,11 +39,10 @@ const options = {
   port: config.port || 8000,
 };
 
-function start(router: Router | null) {
-  if (router) {
-    app.use(router.routes());
-    app.use(router.allowedMethods());
-  }
+function start() {
+  app.use(router.routes());
+  app.use(router.allowedMethods());
+
   // A basic 404 page
   app.use(notFound);
 
@@ -52,4 +52,4 @@ function start(router: Router | null) {
   return app.listen(options);
 }
 
-export { start, app, Context, Router, Status };
+export { start, app, Context, router, Status };
